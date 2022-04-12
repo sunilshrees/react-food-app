@@ -5,62 +5,45 @@ import Results from './Results';
 
 const Search = () => {
     const [meal, setMeal] = useState('');
-    const [mealList, setMealList] = useState({});
+    const [mealList, setMealList] = useState();
 
-    const getMeaItem = async (meal) => {
+    const getMealItem = async (meal) => {
+        if (!meal.length) return;
         const response = await axios.get(
             `https://www.themealdb.com/api/json/v1/1/filter.php?i=${meal}`
         );
         const data = response.data;
         setMealList(data.meals);
-    };
-
-    const changeHandler = (e) => {
-        setMeal(e.target.value);
+        setMeal('');
     };
 
     const submitHandler = (e) => {
         e.preventDefault();
-        getMeaItem(meal);
-        setMeal('');
+        getMealItem(meal);
     };
 
-    const handleKeyPress = (event) => {
-        if (event.key === 'Enter') {
-            submitHandler(event);
-
-            console.log('enter key pressed');
-        }
-    };
+    // const handleKeyPress = (event) => {
+    //     if (event.key === 'Enter') {
+    //         submitHandler(event);
+    //     }
+    // };
     return (
         <>
-            <div className='meal-search-box'>
+            <form className='meal-search-box' onSubmit={submitHandler}>
                 <input
                     type='text'
                     className='search-control'
                     placeholder='Enter an ingredient'
-                    id='search-input'
                     value={meal}
-                    onChange={changeHandler}
-                    onKeyPress={handleKeyPress}
+                    onChange={(e) => setMeal(e.target.value)}
+                    // onKeyPress={handleKeyPress}
                 />
-                <button
-                    type='submit'
-                    className='search-btn btn'
-                    id='search-btn'
-                    onClick={submitHandler}>
+                <button type='submit' className='search-btn btn'>
                     <BsSearch className='search-icon' />
                 </button>
-            </div>
-            <div>
-                {mealList ? (
-                    <Results />
-                ) : (
-                    <div>
-                        Sorry, we didn't find any meal for your ingredient
-                    </div>
-                )}
-            </div>
+            </form>
+
+            {mealList ? <Results mealList={mealList} /> : null}
         </>
     );
 };
